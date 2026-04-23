@@ -71,7 +71,9 @@ void InputStatement::execute(EvalState &state, Program &program) {
     std::string line;
     int value;
     while (true) {
-        getline(std::cin, line);
+        if (!getline(std::cin, line)) {
+            error("INVALID NUMBER");
+        }
         TokenScanner inputScanner;
         inputScanner.ignoreWhitespace();
         inputScanner.scanNumbers();
