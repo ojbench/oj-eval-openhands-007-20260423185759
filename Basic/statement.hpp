@@ -85,4 +85,62 @@ public:
  * specify its own destructor method to free that memory.
  */
 
+class RemStatement : public Statement {
+public:
+    RemStatement(TokenScanner &scanner);
+    virtual void execute(EvalState &state, Program &program);
+};
+
+class LetStatement : public Statement {
+public:
+    LetStatement(TokenScanner &scanner);
+    virtual ~LetStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    Expression *exp;
+};
+
+class PrintStatement : public Statement {
+public:
+    PrintStatement(TokenScanner &scanner);
+    virtual ~PrintStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    Expression *exp;
+};
+
+class InputStatement : public Statement {
+public:
+    InputStatement(TokenScanner &scanner);
+    virtual void execute(EvalState &state, Program &program);
+private:
+    std::string var;
+};
+
+class EndStatement : public Statement {
+public:
+    EndStatement(TokenScanner &scanner);
+    virtual void execute(EvalState &state, Program &program);
+};
+
+class GotoStatement : public Statement {
+public:
+    GotoStatement(TokenScanner &scanner);
+    virtual void execute(EvalState &state, Program &program);
+private:
+    int targetLine;
+};
+
+class IfStatement : public Statement {
+public:
+    IfStatement(TokenScanner &scanner);
+    virtual ~IfStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    Expression *lhs;
+    Expression *rhs;
+    std::string op;
+    int targetLine;
+};
+
 #endif
