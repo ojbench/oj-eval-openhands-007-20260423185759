@@ -79,8 +79,17 @@ void InputStatement::execute(EvalState &state, Program &program) {
         inputScanner.scanNumbers();
         inputScanner.setInput(line);
         std::string token = inputScanner.nextToken();
+        
+        // Handle negative numbers
+        bool isNegative = false;
+        if (token == "-") {
+            isNegative = true;
+            token = inputScanner.nextToken();
+        }
+        
         if (inputScanner.getTokenType(token) == NUMBER && !inputScanner.hasMoreTokens()) {
             value = stringToInteger(token);
+            if (isNegative) value = -value;
             break;
         }
         std::cout << "INVALID NUMBER" << std::endl;
