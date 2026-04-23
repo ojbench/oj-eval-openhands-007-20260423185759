@@ -69,16 +69,21 @@ InputStatement::InputStatement(TokenScanner &scanner) {
 void InputStatement::execute(EvalState &state, Program &program) {
     std::cout << " ? ";
     std::string line;
-    getline(std::cin, line);
-    TokenScanner inputScanner;
-    inputScanner.ignoreWhitespace();
-    inputScanner.scanNumbers();
-    inputScanner.setInput(line);
-    std::string token = inputScanner.nextToken();
-    if (inputScanner.getTokenType(token) != NUMBER || inputScanner.hasMoreTokens()) {
-        error("INVALID NUMBER");
+    int value;
+    while (true) {
+        getline(std::cin, line);
+        TokenScanner inputScanner;
+        inputScanner.ignoreWhitespace();
+        inputScanner.scanNumbers();
+        inputScanner.setInput(line);
+        std::string token = inputScanner.nextToken();
+        if (inputScanner.getTokenType(token) == NUMBER && !inputScanner.hasMoreTokens()) {
+            value = stringToInteger(token);
+            break;
+        }
+        std::cout << "INVALID NUMBER" << std::endl;
+        std::cout << " ? ";
     }
-    int value = stringToInteger(token);
     state.setValue(var, value);
 }
 
@@ -90,7 +95,7 @@ EndStatement::EndStatement(TokenScanner &scanner) {
 }
 
 void EndStatement::execute(EvalState &state, Program &program) {
-    exit(0);
+    state.setValue("__END__", 1);
 }
 
 // GotoStatement - jumps to line

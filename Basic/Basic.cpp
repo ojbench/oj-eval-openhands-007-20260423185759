@@ -107,10 +107,19 @@ void processLine(std::string line, Program &program, EvalState &state) {
                 Statement *stmt = program.getParsedStatement(currentLine);
                 if (stmt != nullptr) {
                     state.setValue("__GOTO__", -1);
+                    state.setValue("__END__", 0);
                     stmt->execute(state, program);
+                    if (state.isDefined("__END__") && state.getValue("__END__") == 1) {
+                        break;
+                    }
                     if (state.isDefined("__GOTO__") && state.getValue("__GOTO__") != -1) {
-                        currentLine = state.getValue("__GOTO__");
+                        int targetLine = state.getValue("__GOTO__");
                         state.setValue("__GOTO__", -1);
+                        if (program.getSourceLine(targetLine).empty()) {
+                            std::cout << "LINE NUMBER ERROR" << std::endl;
+                            break;
+                        }
+                        currentLine = targetLine;
                     } else {
                         currentLine = program.getNextLineNumber(currentLine);
                     }
@@ -146,6 +155,7 @@ void processLine(std::string line, Program &program, EvalState &state) {
         } else if (token == "END") {
             EndStatement stmt(scanner);
             stmt.execute(state, program);
+            exit(0);
         } else if (token == "GOTO") {
             error("SYNTAX ERROR");
         } else if (token == "IF") {
